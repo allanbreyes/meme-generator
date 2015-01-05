@@ -8,25 +8,44 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
     #image-container {
       display: flex;
+    }
+    .content {
+      display: table;
+      height: 100%;
+      margin: 0 auto;
+    }
+    .container {
+      display: table-cell;
+      vertical-align: middle;
+    }
+    .container * {
+      margin: 16px;
     }
   </style>
 </head>
 
 <body>
-
-  <div>
-    <input type="file" id="file" />
-  </div>
-  <div id="image-container">
-    <canvas width="500" height="500"></canvas>
-    <div>
-      <span>Top Line:</span><br/>
-      <input id="topLineText" type="text"><br/>
-      <span>Bottom Line:</span><br/>
-      <input id="bottomLineText" type="text"><br/>
-      <button id="saveBtn">Save</button>
+  <div class="content">
+    <div class="container">
+      <div>
+        <input type="file" id="file" />
+      </div>
+      <div id="image-container">
+        <canvas width="500" height="500"></canvas>
+        <div>
+          <span>Top Line:</span><br/>
+          <input id="topLineText" type="text"><br/>
+          <span>Bottom Line:</span><br/>
+          <input id="bottomLineText" type="text"><br/>
+          <button id="saveBtn">Save</button>
+        </div>
+      </div>
     </div>
   </div>
   <script>
@@ -47,7 +66,29 @@
       // Get Canvas2DContext
       var canvas = document.querySelector('canvas');
       var ctx = canvas.getContext("2d");
-      // Your code here
+
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      if (topLine) { drawMessage(canvas, ctx, 'top', topLine); }
+      if (bottomLine) { drawMessage(canvas, ctx, 'bottom', bottomLine); }
+    }
+
+    function drawMessage(canvas, ctx, position, message) {
+      var fontSize = 30;
+      var padding = 10;
+      var verticalPosition = function() {
+        if (position === 'top') {
+          return fontSize + padding;
+        } else {
+          return canvas.height - padding;
+        }
+      };
+      ctx.font = fontSize + 'pt Impact';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.fillText(message, canvas.width / 2, verticalPosition());
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = fontSize/10;
+      ctx.strokeText(message, canvas.width / 2, verticalPosition());
     }
 
     function saveFile() {
@@ -72,13 +113,13 @@
 
           window.imageSrc = this;
           redrawMeme(window.imageSrc, null, null);
-        }
+        };
 
         // Set image data to background image.
         image.src = data;
         console.log(fileObject.target.result);
       };
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(file);
     }
 
     window.topLineText = "";
